@@ -9,6 +9,8 @@
 #include "Net/UnrealNetwork.h"
 #include "TankGameplayMath.h"
 #include "TankMovementComponent.h"
+#include "Components/BoxComponent.h"
+#include "TankProjectileActor.h"
 
 ATankPawn::ATankPawn()
 {
@@ -24,9 +26,9 @@ ATankPawn::ATankPawn()
 	bUseControllerRotationYaw = false;
 	bUseControllerRotationRoll = false;
 
-	CollisionRoot = CreateDefaultSubobject<UCapsuleComponent>(TEXT("CollisionRoot"));
+	CollisionRoot = CreateDefaultSubobject<UBoxComponent>(TEXT("CollisionRoot"));
 	SetRootComponent(CollisionRoot);
-	CollisionRoot->InitCapsuleSize(90.f, 100.f);
+	CollisionRoot->InitBoxExtent(FVector(50.0f, 50.0f, 50.0f));
 	CollisionRoot->SetCollisionProfileName(TEXT("Pawn"));
 	CollisionRoot->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	CollisionRoot->SetSimulatePhysics(false);
@@ -143,6 +145,17 @@ void ATankPawn::Tick(float DeltaTime)
 			}
 		}
 		TankMovement->SimulateMovement(CurrentIntent, DeltaTime);
+		if (TankMovement->CheckIfReadyToFire() && SlugProjectile)
+		{
+			FActorSpawnParameters BulletSpawnParams;
+			BulletSpawnParams.Owner = this;
+			BulletSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+			FVector BulletSpawnLocation = TurretMesh->GetComponentLocation();
+			GetWorld()->SpawnActor<ATankProjectileActor>(SlugProjectile, FVector(BulletSpawnLocation.X + 5.0f, BulletSpawnLocation.Y, BulletSpawnLocation.Z + 5.0f),
+												TurretYawPivot->GetComponentRotation(), BulletSpawnParams);
+			TankMovement->JustFired();
+		}
+		
 		if (NetworkTankArena::LocalTank::IsValidDeltaTime(DeltaTime))
 		{
 			CanonicalTurretWorldYaw = NetworkTankArena::LocalTank::ResolveTurretWorldYaw(

@@ -8,6 +8,7 @@ namespace NetworkTankArena::LocalTank
 	bool IsFiniteVector(const FVector& Value);
 	bool IsValidDeltaTime(float DeltaTime);
 	float SanitizeAxis(float Value);
+	bool SanitizeBoolean(bool Value);
 	float NonNegativeFinite(float Value);
 	float NormalizeYaw(double Yaw);
 	FTankControlIntent SanitizeIntent(const FTankControlIntent& Intent);

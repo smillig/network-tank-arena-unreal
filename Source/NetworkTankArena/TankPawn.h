@@ -5,7 +5,8 @@
 #include "TankControlIntent.h"
 #include "TankPawn.generated.h"
 
-class UCapsuleComponent;
+class ATankProjectileActor;
+class UBoxComponent;
 class USceneComponent;
 class UStaticMeshComponent;
 class USpringArmComponent;
@@ -47,7 +48,7 @@ private:
 	void ApplyPresentation(float DeltaTime);
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Tank|Components", meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UCapsuleComponent> CollisionRoot;
+	TObjectPtr<UBoxComponent> CollisionRoot;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Tank|Components", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<USceneComponent> VisualRoot;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Tank|Components", meta = (AllowPrivateAccess = "true"))
@@ -66,6 +67,9 @@ private:
 	TObjectPtr<UCameraComponent> FollowCamera;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Tank|Components", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UTankMovementComponent> TankMovement;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<ATankProjectileActor> SlugProjectile;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Tank|Presentation", meta = (ClampMin = "0", Units = "cm"))
 	float HoverAmplitude = 3.f;

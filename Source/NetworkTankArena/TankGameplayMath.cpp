@@ -16,7 +16,13 @@ namespace NetworkTankArena::LocalTank
 	{
 		return FMath::IsFinite(Value) ? FMath::Clamp(Value, -1.f, 1.f) : 0.f;
 	}
-
+	
+	bool SanitizeBoolean(bool Value)
+	{
+		// Probably entirely unnecessary but follows the existing code
+		return Value ? true : false;
+	}
+	
 	float NonNegativeFinite(float Value)
 	{
 		return FMath::IsFinite(Value) ? FMath::Max(Value, 0.f) : 0.f;
@@ -32,6 +38,7 @@ namespace NetworkTankArena::LocalTank
 		FTankControlIntent Result;
 		Result.Throttle = SanitizeAxis(Intent.Throttle);
 		Result.Turn = SanitizeAxis(Intent.Turn);
+		Result.bIsFiring = SanitizeBoolean(Intent.bIsFiring);
 		Result.bHasAimWorldPoint = Intent.bHasAimWorldPoint && IsFiniteVector(Intent.AimWorldPoint);
 		if (Result.bHasAimWorldPoint)
 		{

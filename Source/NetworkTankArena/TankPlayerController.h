@@ -47,8 +47,10 @@ private:
 
 	void UpdateThrottle(const FInputActionValue& Value);
 	void UpdateTurn(const FInputActionValue& Value);
+	void UpdateFire(const FInputActionValue& Value);
 	void ClearThrottle();
 	void ClearTurn();
+	void ClearFire();
 	void ClearCachedInput();
 	void ApplyTankInputContext();
 	void RemoveTankInputContext();
@@ -58,10 +60,13 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Tank|Input")
 	TObjectPtr<UInputAction> TurnAction;
 	UPROPERTY(EditDefaultsOnly, Category = "Tank|Input")
+	TObjectPtr<UInputAction> FireAction;
+	UPROPERTY(EditDefaultsOnly, Category = "Tank|Input")
 	TObjectPtr<UInputMappingContext> TankMappingContext;
 
 	float CachedThrottle = 0.f;
 	float CachedTurn = 0.f;
+	bool CachedFire = false;
 	static constexpr float InputSendIntervalSeconds = 1.f / 20.f;
 	float SecondsUntilInputSend = 0.f;
 	TWeakObjectPtr<UEnhancedInputLocalPlayerSubsystem> MappingSubsystem;

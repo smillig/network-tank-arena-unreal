@@ -24,3 +24,26 @@ the console with tilde and enter `HostLocalhost`. In the second, enter
 `JoinLocalhost`. This uses `127.0.0.1:7777`; start the host before joining.
 These commands start from standalone play and require `TestMap` in the package.
 No account or online service is required.
+
+# Assignment
+
+Choose a focus
+Choose one main networking direction that is large enough to be meaningful but small enough to investigate properly
+during the course. You may combine related ideas when that makes sense, but do not treat the examples below as a
+checklist.
+- Responsiveness and tank movement: Interpolation, smoothing, prediction, reconciliation, correction behaviour,
+chassis movement or turret rotation under latency.
+- Combat and validation: Authoritative projectiles or hitscan, server-side fire validation, hit confirmation, projectile
+spawning, or lag compensation.
+- Replication efficiency: Update frequency for chassis/turret state, projectile replication, reducing unnecessary
+traffic, relevancy/interest management, or lower-frequency state.
+- Game and player state: Join-in-progress, match phases, score/state consistency, respawn state,
+reconnect/disconnect behaviour, or other persistent multiplayer state.
+- Networked gameplay: A new objective, pickup/power-up, team mechanic, weapon mechanic, or other feature
+where authority and synchronization matter.
+- Advanced synchronization: Networked physics, moving/interactive world objects, destructible elements, or
+another technically challenging synchronized system.
+- Diagnostics and profiling: Network statistics, profiling, debug overlays, reproducible test scenarios, or a
+measurable networking bottleneck.
+- Student-proposed direction: A different networking problem or feature is welcome if the scope is suitable. Check
+the idea with the teacher early.

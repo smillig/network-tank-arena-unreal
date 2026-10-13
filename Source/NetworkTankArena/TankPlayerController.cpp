@@ -48,6 +48,12 @@ void ATankPlayerController::SetupInputComponent()
 		EnhancedInput->BindAction(TurnAction, ETriggerEvent::Completed, this, &ATankPlayerController::ClearTurn);
 		EnhancedInput->BindAction(TurnAction, ETriggerEvent::Canceled, this, &ATankPlayerController::ClearTurn);
 	}
+	if (FireAction)
+	{
+		EnhancedInput->BindAction(FireAction, ETriggerEvent::Triggered, this , &ATankPlayerController::UpdateFire);
+		EnhancedInput->BindAction(FireAction, ETriggerEvent::Completed, this , &ATankPlayerController::ClearFire);
+		EnhancedInput->BindAction(FireAction, ETriggerEvent::Canceled, this , &ATankPlayerController::ClearFire);
+	}
 }
 
 void ATankPlayerController::UpdateThrottle(const FInputActionValue& Value)
@@ -62,6 +68,12 @@ void ATankPlayerController::UpdateTurn(const FInputActionValue& Value)
 		? NetworkTankArena::LocalTank::SanitizeAxis(Value.Get<float>()) : 0.f;
 }
 
+void ATankPlayerController::UpdateFire(const FInputActionValue& Value)
+{
+	CachedFire = IsLocalController() && Value.GetValueType() == EInputActionValueType::Boolean
+		? NetworkTankArena::LocalTank::SanitizeBoolean(Value.Get<bool>()) : false;
+}
+
 void ATankPlayerController::ClearThrottle()
 {
 	CachedThrottle = 0.f;
@@ -72,10 +84,16 @@ void ATankPlayerController::ClearTurn()
 	CachedTurn = 0.f;
 }
 
+void ATankPlayerController::ClearFire()
+{
+	CachedFire = false;
+}
+
 void ATankPlayerController::ClearCachedInput()
 {
 	ClearThrottle();
 	ClearTurn();
+	ClearFire();
 	SecondsUntilInputSend = 0.f;
 	if (ATankPawn* Tank = Cast<ATankPawn>(GetPawn()))
 	{
@@ -112,6 +130,7 @@ void ATankPlayerController::PlayerTick(float DeltaTime)
 	{
 		Intent.Throttle = CachedThrottle;
 		Intent.Turn = CachedTurn;
+		Intent.bIsFiring = CachedFire;
 		FVector RayOrigin;
 		FVector RayDirection;
 		if (DeprojectMousePositionToWorld(RayOrigin, RayDirection))
@@ -124,6 +143,7 @@ void ATankPlayerController::PlayerTick(float DeltaTime)
 	{
 		ClearThrottle();
 		ClearTurn();
+		ClearFire();
 	}
 	if (HasAuthority())
 	{

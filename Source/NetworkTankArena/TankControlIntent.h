@@ -17,4 +17,6 @@ struct NETWORKTANKARENA_API FTankControlIntent
 	FVector AimWorldPoint = FVector::ZeroVector;
 	UPROPERTY()
 	bool bHasAimWorldPoint = false;
+	UPROPERTY()
+	bool bIsFiring = false;
 };

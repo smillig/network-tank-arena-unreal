@@ -15,6 +15,15 @@ UTankMovementComponent::UTankMovementComponent()
 	SetPlaneConstraintEnabled(true);
 }
 
+void UTankMovementComponent::BeginPlay()
+{
+	Super::BeginPlay();
+	if (GetOwner()->HasAuthority())
+	{
+		GetWorld()->GetTimerManager().SetTimer(FireCooldownHandle, this, &UTankMovementComponent::AbleToFire, FireCooldown, true);
+	}
+}
+
 void UTankMovementComponent::InitializeGameplayPlane()
 {
 	if (IsValid(UpdatedComponent) && NetworkTankArena::LocalTank::IsFiniteVector(UpdatedComponent->GetComponentLocation()))
@@ -71,5 +80,30 @@ void UTankMovementComponent::SimulateMovement(const FTankControlIntent& Intent, 
 	}
 	const FVector ActualVelocity = (UpdatedComponent->GetComponentLocation() - OldLocation) / DeltaTime;
 	Velocity = IsFiniteVector(ActualVelocity) ? ActualVelocity : FVector::ZeroVector;
+	bIsFiring = Intent.bIsFiring;
 	UpdateComponentVelocity();
+}
+
+bool UTankMovementComponent::CheckIfReadyToFire()
+{
+	if (!IsValid(PawnOwner) || !PawnOwner->HasAuthority()) return false;
+	
+	if (bIsReadyToFire && bIsFiring)
+	{
+		return true;
+	}
+	
+	return false;
+}
+
+void UTankMovementComponent::AbleToFire()
+{
+	bIsReadyToFire = true;
+}
+
+void UTankMovementComponent::JustFired()
+{
+	bIsReadyToFire = false;
+	GetWorld()->GetTimerManager().ClearTimer(FireCooldownHandle);
+	GetWorld()->GetTimerManager().SetTimer(FireCooldownHandle, this, &UTankMovementComponent::AbleToFire, FireCooldown, true);
 }

@@ -5,6 +5,7 @@
 .idea/
 .vscode/
 *.code-workspace
+/Plugins
 
 # OS-generated files
 .DS_Store

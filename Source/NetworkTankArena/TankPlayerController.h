@@ -103,4 +103,8 @@ private:
 	TWeakObjectPtr<UEnhancedInputLocalPlayerSubsystem> MappingSubsystem;
 	UPROPERTY(Transient)
 	TObjectPtr<UInputMappingContext> AppliedMappingContext;
+	
+	// Change: adding support for continuous fire
+	bool bFireHeld = false;
+	float LocalRapidFireCooldownRemaining = 0.0f;
 };

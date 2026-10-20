@@ -83,6 +83,9 @@ void ATankPlayerController::ClearTurn()
 
 void ATankPlayerController::ClearCachedInput()
 {
+	// Change: reset bool and cooldown float here
+	bFireHeld = false;
+	LocalRapidFireCooldownRemaining = 0.0f;
 	InterruptLocalFire();
 	ClearThrottle();
 	ClearTurn();
@@ -126,6 +129,13 @@ void ATankPlayerController::PlayerTick(float DeltaTime)
 		InterruptLocalFire();
 		return;
 	}
+	
+	// Change: Update local cooldown timer so server and client feel the same for when upgraded weapon expires
+	if (LocalRapidFireCooldownRemaining > 0.0f && NetworkTankArena::LocalTank::IsValidDeltaTime(DeltaTime))
+	{
+		LocalRapidFireCooldownRemaining -= DeltaTime;
+	}
+	
 	const ULocalPlayer* LocalPlayer = GetLocalPlayer();
 	const FViewport* Viewport = LocalPlayer && LocalPlayer->ViewportClient ? LocalPlayer->ViewportClient->Viewport : nullptr;
 	FTankControlIntent Intent;
@@ -161,6 +171,20 @@ void ATankPlayerController::PlayerTick(float DeltaTime)
 		}
 	}
 	DispatchPendingFire(Intent);
+	
+	// Change: To support rapid fire we submit more intents to fire if fire trigger held.
+	if (bFireHeld && HasLocalFireControl() && Intent.bHasAimWorldPoint)
+	{
+		const UTankWeaponComponent* Weapon = Tank->GetWeaponComponent();
+		if (Weapon && Weapon->GetCurrentUpgrade() == ETankWeaponUpgradeType::RapidFire)
+		{
+			if (LocalRapidFireCooldownRemaining <= 0.0f)
+			{
+				SubmitLocalFireRequest(Tank, Intent.AimWorldPoint);
+				LocalRapidFireCooldownRemaining = NetworkTankArena::LocalCombat::RapidFireCooldownSeconds;
+			}
+		}
+	}
 }
 
 void ATankPlayerController::Tick(float DeltaSeconds)
@@ -191,6 +215,8 @@ void ATankPlayerController::InterruptLocalFire()
 
 void ATankPlayerController::HandleFireStarted()
 {
+	bFireHeld = true;
+	
 	if (bIgnoreFireInputPass || !HasLocalFireControl())
 	{
 		InterruptLocalFire();
@@ -204,6 +230,8 @@ void ATankPlayerController::HandleFireStarted()
 
 void ATankPlayerController::HandleFireCompleted()
 {
+	bFireHeld = false;
+	
 	if (!bIgnoreFireInputPass && HasLocalFireControl())
 	{
 		FireLatch.Release();
@@ -216,6 +244,7 @@ void ATankPlayerController::HandleFireCompleted()
 
 void ATankPlayerController::HandleFireCanceled()
 {
+	bFireHeld = false;
 	InterruptLocalFire();
 	FireLatch.InvalidateActionValue();
 }

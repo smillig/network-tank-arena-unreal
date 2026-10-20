@@ -3,9 +3,23 @@
 #include "CoreMinimal.h"
 #include "TankGameplayMath.h"
 
+// Change: Enum to differentiate between weapon modes/upgrades.
+UENUM(BlueprintType)
+enum class ETankWeaponUpgradeType : uint8
+{
+	None				UMETA(DisplayName = "None"),
+	SpreadShot			UMETA(DisplayName = "SpreadShot"),
+	RapidFire			UMETA(DisplayName = "RapidFire")
+};
+
 namespace NetworkTankArena::LocalCombat
 {
 	inline constexpr double CooldownSeconds = 0.30;
+	// Change: add some new variables to keep track of new firing modes.
+	inline constexpr double RapidFireCooldownSeconds = 1.0 / 5.0; // easy to adjust shots per second
+	inline constexpr float SpreadShotAngleDegrees = 45.0f;
+	inline constexpr float UpgradeDurationSeconds = 15.0f;
+	inline constexpr float UpgradeRespawnSeconds = 45.0f;
 	inline constexpr float ProjectileSpeed = 2000.f;
 	inline constexpr float ProjectileRadius = 10.f;
 	inline constexpr float ProjectileLifetime = 3.f;
@@ -51,10 +65,11 @@ namespace NetworkTankArena::LocalCombat
 	// Caller supplies gameplay time; no device, actor, presentation or network dependency.
 	struct FWeaponCooldown
 	{
-		bool TryConsume(double Now)
+		// Change: for different cooldowns from different fire rates another argument is passed.
+		bool TryConsume(double Now, double InCooldownSeconds = CooldownSeconds)
 		{
 			if (!FMath::IsFinite(Now) || Now < NextShotTime) { return false; }
-			NextShotTime = Now + CooldownSeconds;
+			NextShotTime = Now + InCooldownSeconds;
 			return true;
 		}
 	private:

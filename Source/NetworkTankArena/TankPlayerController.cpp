@@ -178,6 +178,7 @@ void ATankPlayerController::PlayerTick(float DeltaTime)
 		const UTankWeaponComponent* Weapon = Tank->GetWeaponComponent();
 		if (Weapon && Weapon->GetCurrentUpgrade() == ETankWeaponUpgradeType::RapidFire)
 		{
+			// Reset local cooldown if expired.
 			if (LocalRapidFireCooldownRemaining <= 0.0f)
 			{
 				SubmitLocalFireRequest(Tank, Intent.AimWorldPoint);

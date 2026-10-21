@@ -124,22 +124,21 @@ void UTankWeaponComponent::ApplyUpgrade(ETankWeaponUpgradeType NewUpgrade, float
 void UTankWeaponComponent::OnRep_CurrentUpgrade()
 {
 	// For testing purposes to see if upgrade is applied.
-	FString Weapon = TEXT("");
-	switch (static_cast<uint8>(CurrentUpgrade))
-	{
-	case 0:
-		Weapon = TEXT("Current Upgrade Type: None");
-		break;
-	case 1:
-		Weapon = TEXT("Current Upgrade Type: SpreadShot");
-		break;
-	case 2:
-		Weapon = TEXT("Current Upgrade Type: RapidFire");
-		break;
-	default:
-		Weapon = TEXT("Current Upgrade Type: Unknown");
-	}
-
-	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::White,  Weapon);
-	// Trigger for visual FX or SFX.
+    FString Weapon = TEXT("");
+    switch (static_cast<uint8>(CurrentUpgrade))
+    {
+    case 0:
+        Weapon = TEXT("Current Upgrade Type: None");
+        break;
+    case 1:
+        Weapon = TEXT("Current Upgrade Type: SpreadShot");
+        break;
+    case 2:
+        Weapon = TEXT("Current Upgrade Type: RapidFire");
+        break;
+    default:
+        Weapon = TEXT("Current Upgrade Type: Unknown");
+    }
+    GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::White,  Weapon);
+    // Trigger for visual FX or SFX.
 }

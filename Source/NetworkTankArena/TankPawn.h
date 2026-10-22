@@ -32,6 +32,7 @@ public:
 	double GetGameplayPlaneZ() const;
 	float GetCanonicalTurretWorldYaw() const { return CanonicalTurretWorldYaw; }
 	UTankWeaponComponent* GetWeaponComponent() const { return TankWeapon; }
+	FTankControlIntent GetPendingControlIntent() const { return CurrentIntent; }
 
 protected:
 	virtual void BeginPlay() override;
@@ -93,4 +94,14 @@ private:
 	float CurrentBankDegrees = 0.f;
 	float PreviousPresentationYaw = 0.f;
 	TWeakObjectPtr<AController> TickController;
+	
+	// Tank interpolation test
+	UPROPERTY(ReplicatedUsing = OnRep_ReplicatedTransform)
+	FTransform ReplicatedChassisTransform;
+
+	FVector VisualInterpolationTargetLocation;
+	FRotator VisualInterpolationTargetRotation;
+	
+	UFUNCTION()
+	void OnRep_ReplicatedTransform();
 };

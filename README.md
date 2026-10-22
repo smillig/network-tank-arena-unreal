@@ -42,6 +42,22 @@ Firing became hold to fire when the rapid fire upgrade is active. This perhaps w
 • Known limitations, trade-offs or remaining problems
 The same issues with the original firing are still present. Projectiles are prone to jitter, some can not get spawned based on packet loss.
 
+## Bonus Content
+
+- A cursory attempt at interpolation, prediction and reconciliation
+
+I felt that I didn't have a firm enough grasp on the difference between interpolation, prediction and reconciliation. So I quickly did some questioning with some AI to help clerify. While I can't take credit for the code it did help me gain a bit more of an understanding of these concpets. 
+
+Interpolation:
+
+This happens on the client for other clients/ game replication actors that update at a lower rate than the framerate. Since in this game the other client tank is updating at 20 hz and the framerate is 60 we have 3 frames between updates that are lost and can potentially look a bit choppy. So we lerp over the 0.05 seconds from one update to the next.
+
+Prediction and Reconciliation
+
+These go hand in hand since if we predict on the client we need to server to confirm and correct. The client knows what it's attempting so we take that intent and put it in a buffer and simulate it. We also send this intent to the server. The server checks these and if it's out of spec then corrects. This is helpful since usually a server has the most reliable and high bandwidth connection so the updates to the clients can remain lower but frequent updates are sent from the client and assumed correct unless they need correcting so rather than everything sending at full 60 hz we do save some bandwidth at the expense of the server doing extra work, as well as the client sending a bit more.
+
+I think this gave me a much better synopsis of these three concepts. If you have any corrections or additions I'm eager to hear feedback.
+
 # Network Tank Arena
 
 Student starter for the Network Programming lab. Requires **Unreal Engine 5.7.4**

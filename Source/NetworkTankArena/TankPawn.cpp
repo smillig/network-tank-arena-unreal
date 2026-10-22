@@ -152,6 +152,17 @@ void ATankPawn::Tick(float DeltaTime)
 		}
 	}
 	ApplyPresentation(DeltaTime);
+	// Change: quick attempt at simple interpolation (note: rotation disabled since this caused a bug with the turret rotation)
+	// For other client tanks to look smoother (interpolation)
+	if (!HasAuthority() && !IsLocallyControlled())
+	{
+		// Smooth 60/144 FPS visual interpolation between 20 Hz network states
+		const FVector NewLoc = FMath::VInterpTo(VisualRoot->GetComponentLocation(), VisualInterpolationTargetLocation, DeltaTime, 0.05f);
+		// const FRotator NewRot = FMath::RInterpTo(VisualRoot->GetComponentRotation(), VisualInterpolationTargetRotation, DeltaTime, 0.033333333f);
+	
+		// VisualRoot->SetWorldLocationAndRotation(NewLoc, NewRot);
+		VisualRoot->SetWorldLocation(NewLoc);
+	}
 }
 
 void ATankPawn::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -239,4 +250,15 @@ void ATankPawn::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	}
 	TickController.Reset();
 	Super::EndPlay(EndPlayReason);
+}
+
+// Change: Data for clients to know when to and what from for interpolation
+void ATankPawn::OnRep_ReplicatedTransform()
+{
+	// Do not interpolate our own locally predicted tank!
+	if (IsLocallyControlled()) return;
+
+	// Set targets for the visual presentation to interpolate toward
+	VisualInterpolationTargetLocation = ReplicatedChassisTransform.GetLocation();
+	VisualInterpolationTargetRotation = ReplicatedChassisTransform.Rotator();
 }

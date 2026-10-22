@@ -20,6 +20,7 @@ Investigate if interpolation, prediction or reconciliation would enhance feature
 Download or change to shaun-assignment branch. Open uproject or build and run in 2 player listen server mode in new window PIE.
 
 • What you implemented or changed.
+All code can be seen in git diffs or by searching for comments that have the prefix "Change:"
 I implemented a rapid fire and spreadshot weapon upgrade. The upgrades are pickups that spawn at an item spawner I also made.
 This reqired a few changes in the TankWeaponComponent and the TankPlayerController. I added a struct and some variables to TankWeaponComponent for client and server tracking and some modifications to TankPlayerController so that the rapid fire weapon felt like an actual upgrade.
 New classes for the spawner is in WeaponUpgradeSpawnerActor and upgrade is in WeaponUpgradeActor.
